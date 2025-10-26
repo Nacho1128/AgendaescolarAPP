@@ -1,180 +1,124 @@
 package com.example.agendaandroid;
 
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
 public class AgregarFragment extends Fragment {
 
-    // Campos de texto
+    // Campos de texto donde el usuario escribe los datos
     EditText etAsignatura, etDescripcion, etFecha;
 
-    // Botones
-    Button btnGuardar, btnSeleccionarImagen;
+    // Botón para guardar o actualizar la tarea
+    Button btnGuardar;
 
-    // Imagen de vista previa
-    ImageView ivPreview;
-
-    // Control de base de datos
+    // Clase auxiliar que maneja la base de datos SQLite
     DBHelper dbHelper;
 
-    // Variables para edición de tarea e imagen
+    // Guarda el ID de la tarea cuando se edita (por defecto -1 = nueva tarea)
     int idTarea = -1;
-    Uri imagenUri;
-
-    private static final int PICK_IMAGE_REQUEST = 1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        // Carga el diseño del fragment fragment agregar
         View view = inflater.inflate(R.layout.fragment_agregar, container, false);
 
-        // Conecta elementos visuales con el código
+        // Asocia los elementos del XML con las variables Java
         etAsignatura = view.findViewById(R.id.etAsignatura);
         etDescripcion = view.findViewById(R.id.etDescripcion);
         etFecha = view.findViewById(R.id.etFecha);
         btnGuardar = view.findViewById(R.id.btnGuardar);
-        btnSeleccionarImagen = view.findViewById(R.id.btnSeleccionarImagen);
-        ivPreview = view.findViewById(R.id.ivPreview);
 
+        // Crea el objeto que conecta con la base de datos
         dbHelper = new DBHelper(getContext());
 
-        // 🔹 Formato automático de la fecha (DD-MM-AAAA)
-        etFecha.addTextChangedListener(new TextWatcher() {
-            private boolean isFormatting;
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (isFormatting) return;
-                isFormatting = true;
-
-                String input = s.toString().replaceAll("[^\\d]", "");
-                StringBuilder formatted = new StringBuilder();
-
-                if (input.length() > 8) input = input.substring(0, 8);
-
-                for (int i = 0; i < input.length(); i++) {
-                    formatted.append(input.charAt(i));
-                    if ((i == 1 || i == 3) && i != input.length() - 1) {
-                        formatted.append("-");
-                    }
-                }
-
-                int cursorPos = formatted.length();
-                etFecha.setText(formatted.toString());
-                etFecha.setSelection(Math.min(cursorPos, etFecha.getText().length()));
-                isFormatting = false;
-            }
-        });
-
-        // Si recibe ID → modo edición
+        // Si este fragmento recibe un "id_tarea", significa que el usuario quiere editar una
         if (getArguments() != null && getArguments().containsKey("id_tarea")) {
             idTarea = getArguments().getInt("id_tarea");
-            cargarTarea();
+            cargarTarea(); // Se cargan los datos en los campos
         }
 
-        // Botón para guardar/actualizar tarea
+        // Cuando se presiona el botón "Guardar"
         btnGuardar.setOnClickListener(v -> {
-            if (idTarea == -1) guardarTarea();
-            else actualizarTarea();
+            if (idTarea == -1) {
+                // Si no hay id → es una nueva tarea
+                guardarTarea();
+            } else {
+                // Si existe id → se actualiza una tarea existente
+                actualizarTarea();
+            }
         });
-
-        // Botón para seleccionar imagen
-        btnSeleccionarImagen.setOnClickListener(v -> abrirGaleria());
 
         return view;
     }
 
-    // Abre la galería de imágenes
-    private void abrirGaleria() {
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");
-        startActivityForResult(intent, PICK_IMAGE_REQUEST);
-    }
-
-    // Recibe el resultado de la selección
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == getActivity().RESULT_OK && data != null) {
-            imagenUri = data.getData();
-            ivPreview.setImageURI(imagenUri);
-        }
-    }
-
-    // Carga los datos de una tarea ya existente
+    // Carga los datos de una tarea existente para editarlos
     private void cargarTarea() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        // Consulta que obtiene la tarea según su ID
         Cursor cursor = db.query(DBHelper.TABLE_TAREAS,
                 null,
                 DBHelper.COLUMN_ID + "=?",
                 new String[]{String.valueOf(idTarea)},
-                null, null, null);
+                null,
+                null,
+                null);
 
+        // Si se encuentra el registro, se rellenan los campos
         if (cursor.moveToFirst()) {
             etAsignatura.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_ASIGNATURA)));
             etDescripcion.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_DESCRIPCION)));
             etFecha.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_FECHA)));
-
-            String imagen = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_IMAGEN));
-            if (imagen != null && !imagen.isEmpty()) {
-                imagenUri = Uri.parse(imagen);
-                ivPreview.setImageURI(imagenUri);
-            }
         }
 
         cursor.close();
         db.close();
+
+        // Cambia el texto del botón para indicar que se está editando
         btnGuardar.setText("Actualizar Tarea");
     }
 
-    // Guarda una nueva tarea
+    // Guarda una nueva tarea en la base de datos
     private void guardarTarea() {
+        // Obtiene los valores de los EditText
         String asignatura = etAsignatura.getText().toString().trim();
         String descripcion = etDescripcion.getText().toString().trim();
         String fecha = etFecha.getText().toString().trim();
 
+        // Verifica que los campos no estén vacíos
         if (asignatura.isEmpty() || descripcion.isEmpty() || fecha.isEmpty()) {
             Toast.makeText(getContext(), "Completa todos los campos", Toast.LENGTH_SHORT).show();
             return;
         }
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        // Crea un conjunto de valores para insertar
         ContentValues values = new ContentValues();
         values.put(DBHelper.COLUMN_ASIGNATURA, asignatura);
         values.put(DBHelper.COLUMN_DESCRIPCION, descripcion);
         values.put(DBHelper.COLUMN_FECHA, fecha);
 
-        if (imagenUri != null)
-            values.put(DBHelper.COLUMN_IMAGEN, imagenUri.toString());
-
+        // Inserta el nuevo registro en la tabla
         long newRowId = db.insert(DBHelper.TABLE_TAREAS, null, values);
         db.close();
 
+        // Verifica si la inserción fue exitosa
         if (newRowId != -1) {
             Toast.makeText(getContext(), "Tarea guardada correctamente ✅", Toast.LENGTH_SHORT).show();
-            limpiarCampos();
+            limpiarCampos(); // Limpia los campos después de guardar
         } else {
             Toast.makeText(getContext(), "Error al guardar la tarea ❌", Toast.LENGTH_SHORT).show();
         }
@@ -187,30 +131,30 @@ public class AgregarFragment extends Fragment {
         String fecha = etFecha.getText().toString().trim();
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        // Se guardan los nuevos valores en ContentValues
         ContentValues values = new ContentValues();
         values.put(DBHelper.COLUMN_ASIGNATURA, asignatura);
         values.put(DBHelper.COLUMN_DESCRIPCION, descripcion);
         values.put(DBHelper.COLUMN_FECHA, fecha);
 
-        if (imagenUri != null)
-            values.put(DBHelper.COLUMN_IMAGEN, imagenUri.toString());
-
+        // Actualiza el registro donde el ID coincida
         int filas = db.update(DBHelper.TABLE_TAREAS, values, DBHelper.COLUMN_ID + "=?",
                 new String[]{String.valueOf(idTarea)});
         db.close();
 
-        if (filas > 0)
+        // Muestra mensaje según el resultado
+        if (filas > 0) {
             Toast.makeText(getContext(), "Tarea actualizada correctamente 🔄", Toast.LENGTH_SHORT).show();
-        else
+        } else {
             Toast.makeText(getContext(), "Error al actualizar la tarea ❌", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    // Limpia los campos
+    // Limpia los campos después de guardar
     private void limpiarCampos() {
         etAsignatura.setText("");
         etDescripcion.setText("");
         etFecha.setText("");
-        ivPreview.setImageResource(android.R.drawable.ic_menu_gallery);
-        imagenUri=null;
     }
 }

@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.implementation
+
 plugins {
     alias(libs.plugins.android.application)
 }
@@ -37,6 +39,8 @@ android {
 dependencies {
 
     implementation(libs.appcompat)
+    implementation("com.github.thellmund.Android-Week-View:core:5.3.2")
+    implementation("com.google.android.material:material:1.13.0")
     implementation(libs.material)
     implementation(libs.constraintlayout)
     implementation(libs.lifecycle.livedata.ktx)
@@ -46,4 +50,5 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
 }

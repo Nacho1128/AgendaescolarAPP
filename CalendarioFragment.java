@@ -21,49 +21,31 @@ public class CalendarioFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_calendario, container, false);
 
         calendarView = view.findViewById(R.id.calendarView);
         lvTareasFecha = view.findViewById(R.id.lvTareasFecha);
-        dbHelper = new DBHelper(requireActivity());
+        dbHelper = new DBHelper(getContext());
 
-        // 🔹 Escucha cuando el usuario selecciona una fecha
         calendarView.setOnDateChangeListener((view1, year, month, dayOfMonth) -> {
-            // ✅ Usa el mismo formato que AgregarFragment (DD-MM-YYYY)
-            String fechaSeleccionada = String.format("%02d-%02d-%04d", dayOfMonth, (month + 1), year);
+            String fechaSeleccionada = dayOfMonth + "/" + (month + 1) + "/" + year;
             cargarTareasPorFecha(fechaSeleccionada);
         });
 
         return view;
     }
 
-    // 🔹 Carga las tareas que coincidan con la fecha seleccionada
     private void cargarTareasPorFecha(String fecha) {
         ArrayList<String> lista = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-        Cursor cursor = db.rawQuery(
-                "SELECT " + DBHelper.COLUMN_ASIGNATURA + ", " +
-                        DBHelper.COLUMN_DESCRIPCION +
-                        " FROM " + DBHelper.TABLE_TAREAS +
-                        " WHERE " + DBHelper.COLUMN_FECHA + " = ?",
-                new String[]{fecha}
-        );
+        Cursor cursor = db.rawQuery("SELECT asignatura, descripcion FROM tareas WHERE fecha = ?", new String[]{fecha});
 
         while (cursor.moveToNext()) {
-            String tarea = "📘 " + cursor.getString(0) + "\n📝 " + cursor.getString(1);
+            String tarea = "📘 " + cursor.getString(0) + "\n" + cursor.getString(1);
             lista.add(tarea);
         }
 
-        if (lista.isEmpty()) {
-            lista.add("📭 No hay tareas programadas para esta fecha");
-        }
-
-        lvTareasFecha.setAdapter(
-                new ArrayAdapter<>(requireActivity(), android.R.layout.simple_list_item_1, lista)
-        );
-
+        lvTareasFecha.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, lista));
         cursor.close();
         db.close();
     }

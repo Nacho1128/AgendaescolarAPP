@@ -20,10 +20,6 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        if(getSupportActionBar() != null){
-            getSupportActionBar().hide();
-        }
-
         BottomNavigationView navView = findViewById(R.id.nav_view);
 
         // Configuración de las nuevas rutas (IDs actualizados)

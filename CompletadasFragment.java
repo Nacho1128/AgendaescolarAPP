@@ -74,7 +74,7 @@ public class CompletadasFragment extends Fragment {
         Cursor cursor = db.query(
                 DBHelper.TABLE_TAREAS,
                 null,
-                "completada = 1",
+                "completada = 1", // 👈 filtro
                 null,
                 null,
                 null,
@@ -103,6 +103,7 @@ public class CompletadasFragment extends Fragment {
         // Si no hay tareas completadas, muestra un mensaje
         if (listaTareas.isEmpty()) {
             listaTareas.add("No hay tareas completadas todavía 📭");
+            Toast.makeText(getContext(), "Aún no completaste ninguna tarea 😅", Toast.LENGTH_SHORT).show();
         }
 
         // Crea el adaptador para mostrar los datos en el ListView

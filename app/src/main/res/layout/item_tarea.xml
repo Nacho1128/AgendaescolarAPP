@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:background="#1E1E1E"
+    android:layout_marginBottom="8dp"
+    android:gravity="center_vertical"
+    android:clipToPadding="false">
+
+    <ImageView
+        android:id="@+id/ivTarea"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:scaleType="centerCrop"
+        android:layout_marginEnd="12dp"
+        android:background="@drawable/borde_imagen"
+        android:src="@android:drawable/ic_menu_gallery"
+        android:contentDescription="Imagen tarea" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/tvAsignatura"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Asignatura"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tvDescripcion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Descripción de la tarea"
+            android:textColor="#BBBBBB"
+            android:textSize="14sp"
+            android:layout_marginTop="2dp" />
+
+        <TextView
+            android:id="@+id/tvFecha"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📅 12-11-2025"
+            android:textColor="#C9A7EB"
+            android:textSize="13sp"
+            android:layout_marginTop="2dp" />
+    </LinearLayout>
+
+</LinearLayout>

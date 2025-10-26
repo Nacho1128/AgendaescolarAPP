@@ -1,23 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="16dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#121212"
+    android:padding="16dp">
 
+    <!-- 🔹 Título superior -->
     <TextView
-        android:id="@+id/tvTituloLista"
-        android:text="Mis Tareas"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:layout_gravity="center"
-        android:layout_marginBottom="8dp"
+        android:id="@+id/txtMisTareas"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center" />
+        android:text="Tareas Pendientes"
+        android:textColor="#C9A3FF"
+        android:textStyle="bold"
+        android:textSize="22sp"
+        android:gravity="center"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="20dp" />
 
-    <ListView
-        android:id="@+id/listViewTareas"
+    <!-- 🔹 Contenedor principal con padding inferior -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:dividerHeight="8dp" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:paddingBottom="90dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_lista_container"
+            android:padding="16dp"
+            android:elevation="8dp">
+
+            <ListView
+                android:id="@+id/listViewTareas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="#333333"
+                android:dividerHeight="10dp"
+                android:scrollbars="none"
+                android:padding="8dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
 </LinearLayout>

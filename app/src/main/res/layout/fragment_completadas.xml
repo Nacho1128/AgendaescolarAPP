@@ -3,20 +3,43 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#121212"
     android:padding="16dp">
 
+    <!-- 🔹 Título superior -->
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/tvTituloCompletadas"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Tareas Completadas"
-        android:textSize="20sp"
+        android:textColor="#C9A3FF"
         android:textStyle="bold"
-        android:layout_gravity="center"/>
+        android:textSize="22sp"
+        android:gravity="center"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="20dp" />
 
-    <ListView
-        android:id="@+id/lvCompletadas"
+    <!-- 🔹 Contenedor igual que en Lista -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:divider="@android:color/darker_gray"
-        android:dividerHeight="1dp"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:background="@drawable/bg_lista_container"
+        android:padding="16dp"
+        android:elevation="8dp"
+        android:layout_marginBottom="90dp">
+
+        <!-- 🔹 ListView -->
+        <ListView
+            android:id="@+id/lvCompletadas"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="#333333"
+            android:dividerHeight="10dp"
+            android:padding="8dp"
+            android:scrollbars="none" />
+
+    </LinearLayout>
+
 </LinearLayout>
