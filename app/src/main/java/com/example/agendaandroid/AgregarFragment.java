@@ -41,7 +41,7 @@ public class AgregarFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        // Carga el layout del fragment
         View view = inflater.inflate(R.layout.fragment_agregar, container, false);
 
         // Conecta elementos visuales con el código
@@ -54,7 +54,7 @@ public class AgregarFragment extends Fragment {
 
         dbHelper = new DBHelper(getContext());
 
-        // 🔹 Formato automático de la fecha (DD-MM-AAAA)
+        // 🔹 Formato automático para la fecha (DD-MM-AAAA)
         etFecha.addTextChangedListener(new TextWatcher() {
             private boolean isFormatting;
 
@@ -69,18 +69,21 @@ public class AgregarFragment extends Fragment {
                 if (isFormatting) return;
                 isFormatting = true;
 
+                //se eliminan caracteres no numericos
                 String input = s.toString().replaceAll("[^\\d]", "");
                 StringBuilder formatted = new StringBuilder();
 
+                //limita la fecha a 8 caracteres
                 if (input.length() > 8) input = input.substring(0, 8);
 
+                //se agrega los guiones al formato de fecha
                 for (int i = 0; i < input.length(); i++) {
                     formatted.append(input.charAt(i));
                     if ((i == 1 || i == 3) && i != input.length() - 1) {
                         formatted.append("-");
                     }
                 }
-
+                //actualiza el texto formateado en el campo
                 int cursorPos = formatted.length();
                 etFecha.setText(formatted.toString());
                 etFecha.setSelection(Math.min(cursorPos, etFecha.getText().length()));
@@ -88,7 +91,7 @@ public class AgregarFragment extends Fragment {
             }
         });
 
-        // Si recibe ID → modo edición
+        // si recibe un id por argumentos se edita la tarea
         if (getArguments() != null && getArguments().containsKey("id_tarea")) {
             idTarea = getArguments().getInt("id_tarea");
             cargarTarea();
@@ -106,14 +109,14 @@ public class AgregarFragment extends Fragment {
         return view;
     }
 
-    // Abre la galería de imágenes
+    // Abre la galería de imágenes del celular
     private void abrirGaleria() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
 
-    // Recibe el resultado de la selección
+    // Recibe el resultado de la selección y la muestra en la vista
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -149,12 +152,13 @@ public class AgregarFragment extends Fragment {
         btnGuardar.setText("Actualizar Tarea");
     }
 
-    // Guarda una nueva tarea
+    // Guarda una nueva tarea en la bsdd
     private void guardarTarea() {
         String asignatura = etAsignatura.getText().toString().trim();
         String descripcion = etDescripcion.getText().toString().trim();
         String fecha = etFecha.getText().toString().trim();
 
+        //valida si los campos no estan vacios
         if (asignatura.isEmpty() || descripcion.isEmpty() || fecha.isEmpty()) {
             Toast.makeText(getContext(), "Completa todos los campos", Toast.LENGTH_SHORT).show();
             return;
@@ -166,6 +170,7 @@ public class AgregarFragment extends Fragment {
         values.put(DBHelper.COLUMN_DESCRIPCION, descripcion);
         values.put(DBHelper.COLUMN_FECHA, fecha);
 
+        //guarda la imagen
         if (imagenUri != null)
             values.put(DBHelper.COLUMN_IMAGEN, imagenUri.toString());
 
@@ -192,6 +197,7 @@ public class AgregarFragment extends Fragment {
         values.put(DBHelper.COLUMN_DESCRIPCION, descripcion);
         values.put(DBHelper.COLUMN_FECHA, fecha);
 
+        //actualiza la imagen
         if (imagenUri != null)
             values.put(DBHelper.COLUMN_IMAGEN, imagenUri.toString());
 

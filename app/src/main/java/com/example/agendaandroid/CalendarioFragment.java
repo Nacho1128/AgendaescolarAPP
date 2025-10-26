@@ -14,8 +14,8 @@ import java.util.ArrayList;
 
 public class CalendarioFragment extends Fragment {
 
-    CalendarView calendarView;
-    ListView lvTareasFecha;
+    CalendarView calendarView;// calendario de tareas
+    ListView lvTareasFecha;  //lista donde se muestran las tareas del dia
     DBHelper dbHelper;
 
     @Override
@@ -28,11 +28,11 @@ public class CalendarioFragment extends Fragment {
         lvTareasFecha = view.findViewById(R.id.lvTareasFecha);
         dbHelper = new DBHelper(requireActivity());
 
-        // 🔹 Escucha cuando el usuario selecciona una fecha
+        //  Escucha los cambios cuando se selecciona una fecha en el calendario
         calendarView.setOnDateChangeListener((view1, year, month, dayOfMonth) -> {
-            // ✅ Usa el mismo formato que AgregarFragment (DD-MM-YYYY)
+            //  Usa el mismo formato que AgregarFragment (DD-MM-YYYY)
             String fechaSeleccionada = String.format("%02d-%02d-%04d", dayOfMonth, (month + 1), year);
-            cargarTareasPorFecha(fechaSeleccionada);
+            cargarTareasPorFecha(fechaSeleccionada); // Carga las tareas para la fecha seleccionada
         });
 
         return view;
@@ -43,6 +43,7 @@ public class CalendarioFragment extends Fragment {
         ArrayList<String> lista = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
+        //consulta las tareas segun la fecha elegida
         Cursor cursor = db.rawQuery(
                 "SELECT " + DBHelper.COLUMN_ASIGNATURA + ", " +
                         DBHelper.COLUMN_DESCRIPCION +
@@ -51,19 +52,23 @@ public class CalendarioFragment extends Fragment {
                 new String[]{fecha}
         );
 
+        //recorre los resultados y los guarda en la lista
         while (cursor.moveToNext()) {
             String tarea = "📘 " + cursor.getString(0) + "\n📝 " + cursor.getString(1);
             lista.add(tarea);
         }
 
+        //si no hay tareas, muestra un mensaje
         if (lista.isEmpty()) {
             lista.add("📭 No hay tareas programadas para esta fecha");
         }
 
+        //muestra los resultados
         lvTareasFecha.setAdapter(
                 new ArrayAdapter<>(requireActivity(), android.R.layout.simple_list_item_1, lista)
         );
 
+        //se cierra el cursor y la bsdd
         cursor.close();
         db.close();
     }

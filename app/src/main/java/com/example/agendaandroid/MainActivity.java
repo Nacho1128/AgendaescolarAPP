@@ -11,7 +11,7 @@ import com.example.agendaandroid.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ActivityMainBinding binding;
+    private ActivityMainBinding binding;//clase que maneja la vista principal de la app
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,13 +26,14 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
 
-        // Configuración de las nuevas rutas (IDs actualizados)
+        // Configuración de las nuevas rutas
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_lista,
                 R.id.navigation_agregar,
                 R.id.navigation_info
         ).build();
 
+        //controla la navegacion de los fragments
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);

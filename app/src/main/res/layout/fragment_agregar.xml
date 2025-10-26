@@ -11,7 +11,7 @@
         android:orientation="vertical"
         android:gravity="center_horizontal">
 
-        <!-- 🔹 Título -->
+
         <TextView
             android:id="@+id/tvTitulo"
             android:layout_width="wrap_content"
@@ -23,7 +23,7 @@
             android:layout_marginTop="32dp"
             android:layout_marginBottom="20dp" />
 
-        <!-- 🔹 Campo Asignatura -->
+
         <EditText
             android:id="@+id/etAsignatura"
             android:layout_width="match_parent"
@@ -36,7 +36,7 @@
             android:layout_marginBottom="14dp"
             android:elevation="2dp" />
 
-        <!-- 🔹 Campo Descripción -->
+
         <EditText
             android:id="@+id/etDescripcion"
             android:layout_width="match_parent"
@@ -49,7 +49,7 @@
             android:layout_marginBottom="14dp"
             android:elevation="2dp" />
 
-        <!-- 🔹 Campo Fecha -->
+
         <EditText
             android:id="@+id/etFecha"
             android:layout_width="match_parent"
@@ -66,7 +66,7 @@
 
 
 
-        <!-- 🔹 Botón para seleccionar imagen -->
+
 
         <ImageView
             android:id="@+id/ivPreview"
@@ -79,7 +79,7 @@
             android:scaleType="centerCrop"
             android:src="@android:drawable/ic_menu_gallery" />
 
-        <!-- 🔹 Botón circular de guardar -->
+
         <Button
             android:id="@+id/btnSeleccionarImagen"
             android:layout_width="wrap_content"

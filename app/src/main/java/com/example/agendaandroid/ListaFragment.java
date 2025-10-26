@@ -18,8 +18,7 @@ public class ListaFragment extends Fragment {
 
     ListView listViewTareas;
     DBHelper dbHelper;
-
-    ArrayList<Integer> listaIds;
+    ArrayList<Integer> listaIds;//lista para guardar los id de las tareas
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -32,7 +31,7 @@ public class ListaFragment extends Fragment {
 
         mostrarTareas();
 
-        // Click largo → marcar como completada
+        // Click largo marcar como completada
         listViewTareas.setOnItemLongClickListener((parent, view1, position, id) -> {
             if (position < listaIds.size()) {
                 int idTarea = listaIds.get(position);
@@ -45,7 +44,7 @@ public class ListaFragment extends Fragment {
             return true;
         });
 
-        // Click corto → eliminar tarea
+        // Click corto eliminar tarea
         listViewTareas.setOnItemClickListener((adapterView, view12, position, id) -> {
             if (position < listaIds.size()) {
                 confirmarEliminar(listaIds.get(position));
@@ -58,6 +57,7 @@ public class ListaFragment extends Fragment {
         return view;
     }
 
+    //carga las tareas desde la bsdd
     private void mostrarTareas() {
         ArrayList<HashMap<String, String>> listaMap = new ArrayList<>();
         listaIds = new ArrayList<>();
@@ -73,6 +73,7 @@ public class ListaFragment extends Fragment {
                 DBHelper.COLUMN_ID + " DESC"
         );
 
+        //si hay tareas se agregan a la lista
         if (cursor.moveToFirst()) {
             do {
                 int id = cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_ID));
@@ -81,6 +82,7 @@ public class ListaFragment extends Fragment {
                 String fecha = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_FECHA));
                 String imagen = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_IMAGEN));
 
+                //guarda los datos en un hashmap
                 HashMap<String, String> tarea = new HashMap<>();
                 tarea.put("id", String.valueOf(id));
                 tarea.put("asignatura", asignatura);
@@ -92,6 +94,7 @@ public class ListaFragment extends Fragment {
                 listaIds.add(id);
             } while (cursor.moveToNext());
         } else {
+            //si no hay tareas se muestra un mensaje
             HashMap<String, String> vacia = new HashMap<>();
             vacia.put("asignatura", "No hay tareas pendientes 😴");
             vacia.put("descripcion", "");
@@ -103,10 +106,12 @@ public class ListaFragment extends Fragment {
         cursor.close();
         db.close();
 
+        //crea el adaptador para mostrar los datos
         TareaAdapter adapter = new TareaAdapter(getContext(), listaMap);
         listViewTareas.setAdapter(adapter);
     }
 
+    //muestra un dialogo para confirmar la eliminacion
     private void confirmarEliminar(int idTarea) {
         new AlertDialog.Builder(getContext())
                 .setTitle("Eliminar tarea")
@@ -116,6 +121,8 @@ public class ListaFragment extends Fragment {
                 .show();
     }
 
+
+    //elimina una tarea
     private void eliminarTarea(int idTarea) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         int filas = db.delete(DBHelper.TABLE_TAREAS, DBHelper.COLUMN_ID + "=?",
@@ -130,6 +137,7 @@ public class ListaFragment extends Fragment {
         }
     }
 
+    //cada vez que se vuelve al fragment se refresca la lista
     @Override
     public void onResume() {
         super.onResume();

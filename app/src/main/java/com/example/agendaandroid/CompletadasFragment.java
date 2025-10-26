@@ -16,13 +16,13 @@ import java.util.ArrayList;
 
 public class CompletadasFragment extends Fragment {
 
-    // ListView donde se mostrarán las tareas completadas
+
     ListView lvCompletadas;
 
-    // Clase que maneja la base de datos SQLite
+
     DBHelper dbHelper;
 
-    // Listas que guardan las tareas (texto) y sus IDs (para editarlas o restaurarlas)
+    // Listas que guardan las tareas y sus ids
     ArrayList<String> listaTareas;
     ArrayList<Integer> listaIds;
 
@@ -30,26 +30,26 @@ public class CompletadasFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        // Carga el layout del fragment (fragment_completadas.xml)
+
         View view = inflater.inflate(R.layout.fragment_completadas, container, false);
 
-        // Asocia el ListView con el diseño
+
         lvCompletadas = view.findViewById(R.id.lvCompletadas);
 
-        // Crea una instancia del helper de base de datos
+
         dbHelper = new DBHelper(getContext());
 
         // Muestra las tareas completadas apenas se abre el fragment
         mostrarCompletadas();
 
-        // 👇 Click largo → restaurar tarea (volverla a pendiente)
+        //  Click largo restaura la tarea (volverla a pendiente)
         lvCompletadas.setOnItemLongClickListener((parent, view1, position, id) -> {
             if (position < listaIds.size()) {
                 int idTarea = listaIds.get(position); // Obtiene el ID de la tarea seleccionada
 
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-                // Cambia el valor de "completada" a 0 (es decir, tarea pendiente)
+                // Cambia el valor de completada a 0 (es decir, tarea pendiente)
                 db.execSQL("UPDATE tareas SET completada = 0 WHERE _id = ?", new Object[]{idTarea});
                 db.close();
 
@@ -63,7 +63,7 @@ public class CompletadasFragment extends Fragment {
         return view;
     }
 
-    // 📋 Muestra las tareas completadas desde la base de datos
+    //Muestra las tareas completadas desde la base de datos
     private void mostrarCompletadas() {
         listaTareas = new ArrayList<>();
         listaIds = new ArrayList<>();
@@ -105,7 +105,7 @@ public class CompletadasFragment extends Fragment {
             listaTareas.add("No hay tareas completadas todavía 📭");
         }
 
-        // Crea el adaptador para mostrar los datos en el ListView
+        // Crea el adaptador para mostrar los datos
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 getContext(),
                 android.R.layout.simple_list_item_1,
@@ -116,7 +116,7 @@ public class CompletadasFragment extends Fragment {
         lvCompletadas.setAdapter(adapter);
     }
 
-    // 🔁 Cada vez que se vuelve al fragment, refresca la lista
+    // Cada vez que se vuelve al fragment se refresca la lista
     @Override
     public void onResume() {
         super.onResume();
